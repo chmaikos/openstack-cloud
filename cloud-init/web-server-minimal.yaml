@@ -1,0 +1,42 @@
+#cloud-config
+
+# Minimal Web Server Cloud-Init Configuration
+# Only handles system setup, not application deployment
+
+hostname: web-server
+manage_etc_hosts: true
+
+# Update system packages
+package_update: true
+package_upgrade: true
+
+# Install only essential packages
+packages:
+  - python3
+  - python3-pip
+  - nginx
+  - git
+  - curl
+  - postgresql-client-14
+  - openssh-server
+
+# Setup SSH access
+ssh_pwauth: false
+disable_root: true
+
+# Minimal system setup
+runcmd:
+  # Create application directory
+  - mkdir -p /home/ubuntu/app
+  - chown ubuntu:ubuntu /home/ubuntu/app
+  
+  # Download and run deployment script
+  - curl -o /home/ubuntu/deploy.sh https://raw.githubusercontent.com/your-repo/cloud-app/main/deploy.sh
+  - chmod +x /home/ubuntu/deploy.sh
+  - chown ubuntu:ubuntu /home/ubuntu/deploy.sh
+  
+  # Run deployment as ubuntu user
+  - su - ubuntu -c "/home/ubuntu/deploy.sh web"
+
+# Final message
+final_message: "Web server system setup completed! Application deployment in progress..." 

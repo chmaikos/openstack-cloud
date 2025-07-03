@@ -1,0 +1,68 @@
+=== OpenStack Metrics Report - Thu Jul  3 06:29:02 AM UTC 2025 ===
+Project: cloud_app
+
+=== DATABASE SERVER METRICS ===
+==========================================
+Metrics for db-server (ID: 593a0ace-1d33-42b8-be85-173ec243c43b)
+==========================================
+Available metrics:
+Resource found: 593a0ace-1d33-42b8-be85-173ec243c43b
+Available metrics:
+  - |
+
+[0;34m[INFO] Getting CPU metrics for resource 593a0ace-1d33-42b8-be85-173ec243c43b[0m
+No cpu data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+
+[0;34m[INFO] Getting memory metrics for resource 593a0ace-1d33-42b8-be85-173ec243c43b[0m
+No memory data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No memory.usage data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No memory.resident data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No memory.swap.in data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No memory.swap.out data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+
+[0;34m[INFO] Getting disk metrics for resource 593a0ace-1d33-42b8-be85-173ec243c43b[0m
+No disk.root.size data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No disk.ephemeral.size data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+
+[0;34m[INFO] Getting network metrics for resource 593a0ace-1d33-42b8-be85-173ec243c43b[0m
+Network metrics may not be available for this resource
+
+[0;34m[INFO] Getting instance metrics for resource 593a0ace-1d33-42b8-be85-173ec243c43b[0m
+No vcpus data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No power.state data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+No compute.instance.booting.time data available for resource 593a0ace-1d33-42b8-be85-173ec243c43b
+
+
+=== WEB SERVER METRICS ===
+==========================================
+Metrics for web-server (ID: eb18af10-302a-4a84-a642-27f3e540bc4c)
+==========================================
+Available metrics:
+Resource found: eb18af10-302a-4a84-a642-27f3e540bc4c
+Available metrics:
+  - |
+
+[0;34m[INFO] Getting CPU metrics for resource eb18af10-302a-4a84-a642-27f3e540bc4c[0m
+No cpu data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+
+[0;34m[INFO] Getting memory metrics for resource eb18af10-302a-4a84-a642-27f3e540bc4c[0m
+No memory data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No memory.usage data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No memory.resident data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No memory.swap.in data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No memory.swap.out data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+
+[0;34m[INFO] Getting disk metrics for resource eb18af10-302a-4a84-a642-27f3e540bc4c[0m
+No disk.root.size data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No disk.ephemeral.size data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+
+[0;34m[INFO] Getting network metrics for resource eb18af10-302a-4a84-a642-27f3e540bc4c[0m
+Network metrics may not be available for this resource
+
+[0;34m[INFO] Getting instance metrics for resource eb18af10-302a-4a84-a642-27f3e540bc4c[0m
+No vcpus data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No power.state data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+No compute.instance.booting.time data available for resource eb18af10-302a-4a84-a642-27f3e540bc4c
+
+
+=== END OF METRICS REPORT ===

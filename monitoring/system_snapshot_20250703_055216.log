@@ -1,0 +1,122 @@
+=== SYSTEM SNAPSHOT - Thu Jul  3 05:52:16 AM UTC 2025 ===
+
+=== HOST SYSTEM INFO ===
+Hostname: pvesrv01
+Uptime:  05:52:16 up 13:11,  2 users,  load average: 0.13, 0.28, 0.23
+Load Average: 0.13 0.28 0.23 1/1094 369606
+Memory:                total        used        free      shared  buff/cache   available
+Mem:            31Gi        11Gi       7.3Gi       154Mi        13Gi        19Gi
+Swap:             0B          0B          0B
+Disk Usage: Filesystem                         Size  Used Avail Use% Mounted on
+tmpfs                              3.2G  1.7M  3.2G   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  128G   27G   96G  22% /
+tmpfs                               16G  104K   16G   1% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                               16G     0   16G   0% /run/qemu
+/dev/sda2                          2.0G  130M  1.7G   8% /boot
+tmpfs                              3.2G   64K  3.2G   1% /run/user/1000
+tmpfs                              512M  123M  390M  24% /opt/stack/data/etcd
+/dev/loop0                         6.0G  1.7G  4.4G  28% /opt/stack/data/swift/drives/sdb1
+
+=== OPENSTACK SERVICES ===
+Nova Services:
++--------------------------------------+----------------+----------+----------+---------+-------+----------------------------+
+| ID                                   | Binary         | Host     | Zone     | Status  | State | Updated At                 |
++--------------------------------------+----------------+----------+----------+---------+-------+----------------------------+
+| 980e2a29-a74b-4c0c-991e-8bcbd6e19a94 | nova-scheduler | pvesrv01 | internal | enabled | up    | 2025-07-03T05:51:39.000000 |
+| ce6ff2cc-18ef-42c8-87be-3b6b03fd47ff | nova-conductor | pvesrv01 | internal | enabled | up    | 2025-07-03T05:51:44.000000 |
+| 36fc3ce9-821b-4082-ad1d-f114913d639d | nova-conductor | pvesrv01 | internal | enabled | up    | 2025-07-03T05:52:12.000000 |
+| 38a1471b-a152-498c-aa31-7706146c7dc8 | nova-compute   | pvesrv01 | nova     | enabled | up    | 2025-07-03T05:51:57.000000 |
++--------------------------------------+----------------+----------+----------+---------+-------+----------------------------+
+
+Neutron Services:
++--------------------------------------+------------------------------+----------+-------------------+-------+-------+----------------------------+
+| ID                                   | Agent Type                   | Host     | Availability Zone | Alive | State | Binary                     |
++--------------------------------------+------------------------------+----------+-------------------+-------+-------+----------------------------+
+| 78687fc9-9774-5460-9f22-c523382a927d | OVN Metadata agent           | pvesrv01 |                   | :-)   | UP    | neutron-ovn-metadata-agent |
+| d9f5fdf6-0c3a-4641-a8c1-3bc7c7087955 | OVN Controller Gateway agent | pvesrv01 |                   | :-)   | UP    | ovn-controller             |
++--------------------------------------+------------------------------+----------+-------------------+-------+-------+----------------------------+
+
+=== OVS STATUS ===
+55ece639-213e-44c0-bfd4-cd3d4567ac6f
+    Manager "ptcp:6640:127.0.0.1"
+        is_connected: true
+    Bridge br-int
+        fail_mode: secure
+        datapath_type: system
+        Port tapbbc8d87d-a9
+            Interface tapbbc8d87d-a9
+                error: "could not open network device tapbbc8d87d-a9 (No such device)"
+        Port tap2f54585a-9b
+            Interface tap2f54585a-9b
+                error: "could not open network device tap2f54585a-9b (No such device)"
+        Port tap772f9cba-cb
+            Interface tap772f9cba-cb
+                error: "could not open network device tap772f9cba-cb (No such device)"
+        Port tap116578a2-14
+            Interface tap116578a2-14
+        Port tap6a901742-17
+            Interface tap6a901742-17
+        Port tap6f660e10-70
+            Interface tap6f660e10-70
+        Port patch-br-int-to-provnet-b0b11d45-8990-48af-8f9c-e3f0af4d9cc0
+            Interface patch-br-int-to-provnet-b0b11d45-8990-48af-8f9c-e3f0af4d9cc0
+                type: patch
+                options: {peer=patch-provnet-b0b11d45-8990-48af-8f9c-e3f0af4d9cc0-to-br-int}
+        Port tap4fcd4549-70
+            Interface tap4fcd4549-70
+                error: "could not open network device tap4fcd4549-70 (No such device)"
+        Port br-int
+            Interface br-int
+                type: internal
+    Bridge br-ex
+        Port patch-provnet-b0b11d45-8990-48af-8f9c-e3f0af4d9cc0-to-br-int
+            Interface patch-provnet-b0b11d45-8990-48af-8f9c-e3f0af4d9cc0-to-br-int
+                type: patch
+                options: {peer=patch-br-int-to-provnet-b0b11d45-8990-48af-8f9c-e3f0af4d9cc0}
+        Port ens19
+            Interface ens19
+        Port enp0s9
+            Interface enp0s9
+                error: "could not open network device enp0s9 (No such device)"
+        Port br-ex
+            Interface br-ex
+                type: internal
+    ovs_version: "2.17.9"
+
+=== IPTABLES NAT RULES ===
+Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+
+Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+17014 1055K MASQUERADE  all  --  *      ens18   0.0.0.0/0            0.0.0.0/0            /* NETMAKER */
+ 122K 7759K LIBVIRT_PRT  all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+    0     0 netmakernat  all  --  *      netmaker  0.0.0.0/0            0.0.0.0/0            /* NETMAKER */
+
+Chain LIBVIRT_PRT (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 RETURN     all  --  *      *       192.168.122.0/24     224.0.0.0/24        
+    0     0 RETURN     all  --  *      *       192.168.122.0/24     255.255.255.255     
+    0     0 MASQUERADE  tcp  --  *      *       192.168.122.0/24    !192.168.122.0/24     masq ports: 1024-65535
+    0     0 MASQUERADE  udp  --  *      *       192.168.122.0/24    !192.168.122.0/24     masq ports: 1024-65535
+    0     0 MASQUERADE  all  --  *      *       192.168.122.0/24    !192.168.122.0/24    
+
+Chain netmakernat (1 references)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 RETURN     all  --  *      *       0.0.0.0/0            0.0.0.0/0           
+
+=== ROUTING TABLE ===
+default via 10.0.50.250 dev ens18 proto dhcp src 10.0.50.60 metric 100 
+10.0.50.0/24 dev ens18 proto kernel scope link src 10.0.50.60 metric 100 
+10.0.50.250 dev ens18 proto dhcp scope link src 10.0.50.60 metric 100 
+100.112.100.0/24 dev netmaker proto kernel scope link src 100.112.100.2 
+192.168.57.0/24 dev br-ex proto kernel scope link src 192.168.57.1 
+192.168.122.0/24 dev virbr0 proto kernel scope link src 192.168.122.1 linkdown 
+

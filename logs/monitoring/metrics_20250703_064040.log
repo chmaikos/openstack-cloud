@@ -1,0 +1,96 @@
+=== OpenStack Metrics Report - Thu Jul  3 06:40:40 AM UTC 2025 ===
+Project: cloud_app
+
+=== DATABASE SERVER METRICS ===
+🖥️  db-server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 ID: 593a0ace-1d33-42b8-be85-173ec243c43b
+🔗 IP: 192.168.128.250
+📊 Status: ACTIVE
+
+./monitor.sh: line 154: [: -eq: unary operator expected
+./monitor.sh: line 156: [: -eq: unary operator expected
+🖥️  CPU Usage: % | Trend: ➡️  Stable
+
+./monitor.sh: line 154: [: -eq: unary operator expected
+./monitor.sh: line 156: [: -eq: unary operator expected
+🧠 Memory Status:
+./monitor.sh: line 111: [: -eq: unary operator expected
+   📊 Total: 2025-07-03T06:00:00+00:00 MB | Trend: ➡️  Stable
+./monitor.sh: line 111: [: -eq: unary operator expected
+   💾 Used: 2025-07-03T06:35:00+00:00 MB
+./monitor.sh: line 111: [: -eq: unary operator expected
+   🏠 Resident: 2025-07-03T06:35:00+00:00 MB
+   💿 Swap Activity:
+./monitor.sh: line 111: [: -eq: unary operator expected
+      ↙️  Swap In: 2025-07-03T06:35:00+00:00 MB
+./monitor.sh: line 111: [: -eq: unary operator expected
+      ↗️  Swap Out: 2025-07-03T06:35:00+00:00 MB
+
+💾 Disk Storage:
+   🗂️  Root Disk: 2025-07-03T06:35:00+00:00 GB
+   📁 Ephemeral Disk: 2025-07-03T06:35:00+00:00 GB
+
+🌐 Network: No real-time network metrics available
+   ℹ️  Network metrics are typically collected by the hypervisor
+
+🖥️  Instance Details:
+   🔢 vCPUs: 2025-07-03T06:00:00+00:00 300.0 1.0
+   ⚡ Power State: Unknown (2025-07-03T06:35:00+00:00 300.0 1.0)
+   ⏱️  Boot Time: 2025-07-02T18:05:00+00:00 300.0 29.959333 seconds
+
+📈 Quick Summary:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🖥️  CPU: %
+./monitor.sh: line 111: [: -eq: unary operator expected
+🧠 Memory: 2025-07-03T06:00:00+00:00 MB
+⚡ Status: Unknown
+
+
+=== WEB SERVER METRICS ===
+🖥️  web-server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 ID: eb18af10-302a-4a84-a642-27f3e540bc4c
+🔗 IP: 192.168.128.207
+📊 Status: ACTIVE
+
+./monitor.sh: line 154: [: -eq: unary operator expected
+./monitor.sh: line 156: [: -eq: unary operator expected
+🖥️  CPU Usage: % | Trend: ➡️  Stable
+
+./monitor.sh: line 154: [: -eq: unary operator expected
+./monitor.sh: line 156: [: -eq: unary operator expected
+🧠 Memory Status:
+./monitor.sh: line 111: [: -eq: unary operator expected
+   📊 Total: 2025-07-03T06:00:00+00:00 MB | Trend: ➡️  Stable
+./monitor.sh: line 111: [: -eq: unary operator expected
+   💾 Used: 2025-07-03T06:35:00+00:00 MB
+./monitor.sh: line 111: [: -eq: unary operator expected
+   🏠 Resident: 2025-07-03T06:35:00+00:00 MB
+   💿 Swap Activity:
+./monitor.sh: line 111: [: -eq: unary operator expected
+      ↙️  Swap In: 2025-07-03T06:35:00+00:00 MB
+./monitor.sh: line 111: [: -eq: unary operator expected
+      ↗️  Swap Out: 2025-07-03T06:35:00+00:00 MB
+
+💾 Disk Storage:
+   🗂️  Root Disk: 2025-07-03T06:35:00+00:00 GB
+   📁 Ephemeral Disk: 2025-07-03T06:35:00+00:00 GB
+
+🌐 Network: No real-time network metrics available
+   ℹ️  Network metrics are typically collected by the hypervisor
+
+🖥️  Instance Details:
+   🔢 vCPUs: 2025-07-03T06:00:00+00:00 300.0 1.0
+   ⚡ Power State: Unknown (2025-07-03T06:35:00+00:00 300.0 1.0)
+   ⏱️  Boot Time: 2025-07-02T18:10:00+00:00 300.0 12.250796 seconds
+
+📈 Quick Summary:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🖥️  CPU: %
+./monitor.sh: line 111: [: -eq: unary operator expected
+🧠 Memory: 2025-07-03T06:00:00+00:00 MB
+⚡ Status: Unknown
+
+
+=== END OF METRICS REPORT ===

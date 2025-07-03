@@ -1,0 +1,76 @@
+=== OpenStack Metrics Report - Thu Jul  3 06:43:29 AM UTC 2025 ===
+Project: cloud_app
+
+=== DATABASE SERVER METRICS ===
+🖥️  db-server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 ID: 593a0ace-1d33-42b8-be85-173ec243c43b
+🔗 IP: 192.168.128.250
+📊 Status: ACTIVE
+
+🖥️  CPU Usage: 199.68 CPU-seconds | Trend: ↗️  Increasing
+
+🧠 Memory Status:
+   📊 Total: 2.00 GB | Trend: ➡️  Stable
+   💾 Used: 403.42578125 MB
+   🏠 Resident: 2.00 GB
+   💿 Swap Activity:
+      ↙️  Swap In: 0.0 MB
+      ↗️  Swap Out: 0.0 MB
+
+💾 Disk Storage:
+   🗂️  Root Disk: 20.0 GB
+   📁 Ephemeral Disk: 0.0 GB
+
+🌐 Network: No real-time network metrics available
+   ℹ️  Network metrics are typically collected by the hypervisor
+
+🖥️  Instance Details:
+   🔢 vCPUs: 1.0
+   ⚡ Power State: Unknown
+   ⏱️  Boot Time: 29.959333 seconds
+
+📈 Quick Summary:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🖥️  CPU: 199.68 CPU-seconds
+🧠 Memory: 2.00 GB
+⚡ Status: Unknown
+
+
+=== WEB SERVER METRICS ===
+🖥️  web-server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 ID: eb18af10-302a-4a84-a642-27f3e540bc4c
+🔗 IP: 192.168.128.207
+📊 Status: ACTIVE
+
+🖥️  CPU Usage: 269.52 CPU-seconds | Trend: ↗️  Increasing
+
+🧠 Memory Status:
+   📊 Total: 2.00 GB | Trend: ➡️  Stable
+   💾 Used: 410.37109375 MB
+   🏠 Resident: 1.91 GB
+   💿 Swap Activity:
+      ↙️  Swap In: 0.0 MB
+      ↗️  Swap Out: 0.0 MB
+
+💾 Disk Storage:
+   🗂️  Root Disk: 20.0 GB
+   📁 Ephemeral Disk: 0.0 GB
+
+🌐 Network: No real-time network metrics available
+   ℹ️  Network metrics are typically collected by the hypervisor
+
+🖥️  Instance Details:
+   🔢 vCPUs: 1.0
+   ⚡ Power State: Unknown
+   ⏱️  Boot Time: 12.250796 seconds
+
+📈 Quick Summary:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🖥️  CPU: 269.52 CPU-seconds
+🧠 Memory: 2.00 GB
+⚡ Status: Unknown
+
+
+=== END OF METRICS REPORT ===

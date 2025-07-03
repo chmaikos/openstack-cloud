@@ -1,0 +1,16 @@
+OpenStack Cloud Application Deployment Report
+============================================
+Date: Wed Jul  2 06:11:13 PM UTC 2025
+Project: cloud_app
+
+Infrastructure:
+- Network: app_net (6f660e10-798f-41dd-845f-41490c0d225a)
+- Web Server: web-server (192.168.128.207)
+- Database Server: db-server (192.168.128.250)
+- Floating IP: 192.168.57.84
+
+Security Groups:
+- Web: web-security-group (Ports: 80, 22, ICMP)
+- Database: db-security-group (Ports: 5432, 22, ICMP)
+
+Deployment Status: SUCCESS
