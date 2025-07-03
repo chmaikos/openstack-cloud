@@ -5,58 +5,58 @@
 ```mermaid
 graph TB
     subgraph "Client Layer"
-        BROWSER[🌐 Web Browser]
-        API_CLIENT[📱 API Client]
-        SSH_CLIENT[🔧 SSH Client]
+        BROWSER["🌐 Web Browser"]
+        API_CLIENT["📱 API Client"]
+        SSH_CLIENT["🔧 SSH Client"]
     end
     
     subgraph "Load Balancer & Proxy"
-        NGINX[Nginx Proxy Server<br/>Port: 80<br/>SSL Termination<br/>Static Files]
+        NGINX["Nginx Proxy Server<br/>Port: 80<br/>SSL Termination<br/>Static Files"]
     end
     
     subgraph "Application Layer"
-        FASTAPI[FastAPI Application<br/>Port: 8000<br/>Python 3.8+<br/>Uvicorn Server]
+        FASTAPI["FastAPI Application<br/>Port: 8000<br/>Python 3.8+<br/>Uvicorn Server"]
         
         subgraph "API Endpoints"
-            HEALTH[/health<br/>System Status]
-            USERS[/api/users<br/>User Management]
-            POSTS[/api/posts<br/>Content Management]
-            STATS[/api/stats<br/>System Metrics]
-            DOCS[/docs<br/>API Documentation]
+            HEALTH["/health<br/>System Status"]
+            USERS["/api/users<br/>User Management"]
+            POSTS["/api/posts<br/>Content Management"]
+            STATS["/api/stats<br/>System Metrics"]
+            DOCS["/docs<br/>API Documentation"]
         end
     end
     
     subgraph "Data Layer"
-        POSTGRES[(PostgreSQL 14<br/>Database Server<br/>Port: 5432)]
+        POSTGRES[("PostgreSQL 14<br/>Database Server<br/>Port: 5432")]
         
         subgraph "Database Schema"
-            USERS_TABLE[users<br/>id, username, email, created_at]
-            POSTS_TABLE[posts<br/>id, user_id, title, content, created_at]
+            USERS_TABLE["users<br/>id, username, email, created_at"]
+            POSTS_TABLE["posts<br/>id, user_id, title, content, created_at"]
         end
     end
     
     subgraph "Infrastructure Layer"
-        WEB_VM[🖥️ Web Server VM<br/>Ubuntu 20.04<br/>m1.small Flavor<br/>2 vCPU, 4GB RAM]
-        DB_VM[💾 Database VM<br/>Ubuntu 20.04<br/>m1.small Flavor<br/>2 vCPU, 4GB RAM]
+        WEB_VM["🖥️ Web Server VM<br/>Ubuntu 20.04<br/>m1.small Flavor<br/>2 vCPU, 4GB RAM"]
+        DB_VM["💾 Database VM<br/>Ubuntu 20.04<br/>m1.small Flavor<br/>2 vCPU, 4GB RAM"]
     end
     
     subgraph "Monitoring & Management"
-        MONITORING[📊 Monitoring Scripts<br/>CPU, Memory, Disk<br/>Network I/O]
-        COST_ANALYSIS[💰 Cost Analysis<br/>Resource Usage<br/>Cost Calculation]
-        CLOUD_INIT[⚙️ Cloud-init Scripts<br/>Automated Setup<br/>Configuration]
+        MONITORING["📊 Monitoring Scripts<br/>CPU, Memory, Disk<br/>Network I/O"]
+        COST_ANALYSIS["💰 Cost Analysis<br/>Resource Usage<br/>Cost Calculation"]
+        CLOUD_INIT["⚙️ Cloud-init Scripts<br/>Automated Setup<br/>Configuration"]
     end
     
     subgraph "OpenStack Infrastructure"
-        OPENSTACK[☁️ OpenStack Cloud<br/>Compute, Network<br/>Storage, Identity]
+        OPENSTACK["☁️ OpenStack Cloud<br/>Compute, Network<br/>Storage, Identity"]
         
         subgraph "Security Groups"
-            WEB_SG[Web Security Group<br/>Ports: 80, 8000, 22]
-            DB_SG[DB Security Group<br/>Ports: 5432, 22]
+            WEB_SG["Web Security Group<br/>Ports: 80, 8000, 22"]
+            DB_SG["DB Security Group<br/>Ports: 5432, 22"]
         end
         
         subgraph "Networking"
-            PRIVATE_NET[Private Network<br/>192.168.128.0/24]
-            FLOATING_IP[Floating IP<br/>Public Access]
+            PRIVATE_NET["Private Network<br/>192.168.128.0/24"]
+            FLOATING_IP["Floating IP<br/>Public Access"]
         end
     end
     

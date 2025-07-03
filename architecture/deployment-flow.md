@@ -4,42 +4,42 @@
 
 ```mermaid
 flowchart TD
-    START([Start Deployment]) --> CHECK_ENV{Check Environment}
-    CHECK_ENV -->|OpenStack Ready| CREATE_SG[Create Security Groups]
-    CHECK_ENV -->|Not Ready| ERROR_ENV[❌ Environment Error]
+    START(["Start Deployment"]) --> CHECK_ENV{"Check Environment"}
+    CHECK_ENV -->|"OpenStack Ready"| CREATE_SG["Create Security Groups"]
+    CHECK_ENV -->|"Not Ready"| ERROR_ENV["❌ Environment Error"]
     
-    CREATE_SG --> CREATE_DB[Launch Database VM]
-    CREATE_DB --> WAIT_DB[Wait for DB VM Ready]
-    WAIT_DB --> CLOUD_INIT_DB[Execute DB Cloud-init]
+    CREATE_SG --> CREATE_DB["Launch Database VM"]
+    CREATE_DB --> WAIT_DB["Wait for DB VM Ready"]
+    WAIT_DB --> CLOUD_INIT_DB["Execute DB Cloud-init"]
     
-    CLOUD_INIT_DB --> INSTALL_PG[Install PostgreSQL]
-    INSTALL_PG --> CONFIG_PG[Configure PostgreSQL]
-    CONFIG_PG --> INIT_DB[Initialize Database Schema]
-    INIT_DB --> DB_READY{Database Ready?}
+    CLOUD_INIT_DB --> INSTALL_PG["Install PostgreSQL"]
+    INSTALL_PG --> CONFIG_PG["Configure PostgreSQL"]
+    CONFIG_PG --> INIT_DB["Initialize Database Schema"]
+    INIT_DB --> DB_READY{"Database Ready?"}
     
-    DB_READY -->|Yes| CREATE_WEB[Launch Web VM]
-    DB_READY -->|No| ERROR_DB[❌ Database Setup Failed]
+    DB_READY -->|"Yes"| CREATE_WEB["Launch Web VM"]
+    DB_READY -->|"No"| ERROR_DB["❌ Database Setup Failed"]
     
-    CREATE_WEB --> WAIT_WEB[Wait for Web VM Ready]
-    WAIT_WEB --> CLOUD_INIT_WEB[Execute Web Cloud-init]
+    CREATE_WEB --> WAIT_WEB["Wait for Web VM Ready"]
+    WAIT_WEB --> CLOUD_INIT_WEB["Execute Web Cloud-init"]
     
-    CLOUD_INIT_WEB --> CLONE_REPO[Clone GitHub Repository]
-    CLONE_REPO --> INSTALL_DEPS[Install Python Dependencies]
-    INSTALL_DEPS --> SETUP_VENV[Setup Virtual Environment]
-    SETUP_VENV --> CONFIG_FASTAPI[Configure FastAPI]
-    CONFIG_FASTAPI --> SETUP_NGINX[Setup Nginx Proxy]
-    SETUP_NGINX --> START_SERVICES[Start Application Services]
+    CLOUD_INIT_WEB --> CLONE_REPO["Clone GitHub Repository"]
+    CLONE_REPO --> INSTALL_DEPS["Install Python Dependencies"]
+    INSTALL_DEPS --> SETUP_VENV["Setup Virtual Environment"]
+    SETUP_VENV --> CONFIG_FASTAPI["Configure FastAPI"]
+    CONFIG_FASTAPI --> SETUP_NGINX["Setup Nginx Proxy"]
+    SETUP_NGINX --> START_SERVICES["Start Application Services"]
     
-    START_SERVICES --> ALLOCATE_FIP[Allocate Floating IP]
-    ALLOCATE_FIP --> TEST_APP[Test Application Health]
+    START_SERVICES --> ALLOCATE_FIP["Allocate Floating IP"]
+    ALLOCATE_FIP --> TEST_APP["Test Application Health"]
     
-    TEST_APP --> APP_HEALTHY{Application Healthy?}
-    APP_HEALTHY -->|Yes| SUCCESS[✅ Deployment Successful]
-    APP_HEALTHY -->|No| ERROR_APP[❌ Application Setup Failed]
+    TEST_APP --> APP_HEALTHY{"Application Healthy?"}
+    APP_HEALTHY -->|"Yes"| SUCCESS["✅ Deployment Successful"]
+    APP_HEALTHY -->|"No"| ERROR_APP["❌ Application Setup Failed"]
     
-    SUCCESS --> SAVE_CONFIG[Save Configuration]
-    SAVE_CONFIG --> GENERATE_REPORT[Generate Deployment Report]
-    GENERATE_REPORT --> END([Deployment Complete])
+    SUCCESS --> SAVE_CONFIG["Save Configuration"]
+    SAVE_CONFIG --> GENERATE_REPORT["Generate Deployment Report"]
+    GENERATE_REPORT --> END(["Deployment Complete"])
     
     ERROR_ENV --> END
     ERROR_DB --> END

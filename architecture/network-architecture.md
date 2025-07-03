@@ -5,33 +5,33 @@
 ```mermaid
 graph TB
     subgraph "Public Network (Internet)"
-        INTERNET[🌐 Internet]
+        INTERNET["🌐 Internet"]
     end
     
     subgraph "OpenStack Public Network"
-        PUBLIC_NET[Public Network<br/>External Gateway]
+        PUBLIC_NET["Public Network<br/>External Gateway"]
     end
     
     subgraph "OpenStack Private Network (app_net)"
         subgraph "Security Groups"
-            WEB_SG[Web Security Group<br/>Ports: 80, 8000, 22, ICMP<br/>Source: 0.0.0.0/0]
-            DB_SG[Database Security Group<br/>Ports: 5432, 22, ICMP<br/>Source: 192.168.128.0/24]
+            WEB_SG["Web Security Group<br/>Ports: 80, 8000, 22, ICMP<br/>Source: 0.0.0.0/0"]
+            DB_SG["Database Security Group<br/>Ports: 5432, 22, ICMP<br/>Source: 192.168.128.0/24"]
         end
         
         subgraph "Virtual Machines"
-            WEB_VM[🖥️ Web Server VM<br/>Hostname: web-server<br/>IP: 192.168.128.x<br/>OS: Ubuntu<br/>Services: FastAPI, Nginx]
-            DB_VM[💾 Database Server VM<br/>Hostname: db-server<br/>IP: 192.168.128.x<br/>OS: Ubuntu<br/>Service: PostgreSQL 14]
+            WEB_VM["🖥️ Web Server VM<br/>Hostname: web-server<br/>IP: 192.168.128.x<br/>OS: Ubuntu<br/>Services: FastAPI, Nginx"]
+            DB_VM["💾 Database Server VM<br/>Hostname: db-server<br/>IP: 192.168.128.x<br/>OS: Ubuntu<br/>Service: PostgreSQL 14"]
         end
         
         subgraph "Application Stack"
-            FASTAPI[FastAPI Application<br/>Port: 8000]
-            NGINX[Nginx Proxy<br/>Port: 80]
-            POSTGRES[PostgreSQL Database<br/>Port: 5432]
+            FASTAPI["FastAPI Application<br/>Port: 8000"]
+            NGINX["Nginx Proxy<br/>Port: 80"]
+            POSTGRES["PostgreSQL Database<br/>Port: 5432"]
         end
     end
     
     subgraph "Floating IP"
-        FLOATING_IP[🌍 Floating IP<br/>Public Access]
+        FLOATING_IP["🌍 Floating IP<br/>Public Access"]
     end
     
     %% Connections
