@@ -1,0 +1,48 @@
+{
+    "analysis_date": "2025-07-03T10:28:15+00:00",
+    "project": "cloud_app",
+    "cost_rates": {
+        "vcpu_per_hour": 0.05,
+        "ram_per_gb_per_hour": 0.02,
+        "storage_per_gb_per_hour": 0.10,
+        "floating_ip_per_hour": 0.01,
+        "bandwidth_per_gb_per_hour": 0.02
+    },
+    "database_server": {
+        "name": "db-server",
+        "flavor": "m1.small",
+        "vcpus": 1,
+        "ram_mb": 2048,
+        "disk_gb": 20,
+        "running_hours": 1,
+        "costs": {
+            "vcpu": .05,
+            "ram": .0400,
+            "storage": .0833,
+            "bandwidth": 0,
+            "total": .1733
+        },
+        "bandwidth_gb": 0
+    },
+    "web_server": {
+        "name": "web-server",
+        "flavor": "m1.small",
+        "vcpus": 1,
+        "ram_mb": 2048,
+        "disk_gb": 20,
+        "running_hours": 1,
+        "floating_ip": "192.168.57.131",
+        "costs": {
+            "vcpu": .05,
+            "ram": .0400,
+            "storage": .0833,
+            "bandwidth": 0,
+            "total": .1733
+        },
+        "bandwidth_gb": 0
+    },
+    "network_costs": {
+        "floating_ip": .01
+    },
+    "total_cost": .3566
+}

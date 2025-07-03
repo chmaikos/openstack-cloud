@@ -399,17 +399,6 @@ analyze_costs() {
         echo ""
     fi
     
-    # Cost optimization recommendations
-    echo "💡 COST OPTIMIZATION RECOMMENDATIONS"
-    echo "===================================="
-    echo "1. Monitor actual resource usage vs allocation"
-    echo "2. Consider right-sizing instances based on usage patterns"
-    echo "3. Implement auto-scaling for variable workloads"
-    echo "4. Use spot instances for non-critical workloads"
-    echo "5. Monitor and optimize bandwidth usage"
-    echo "6. Consider reserved instances for predictable workloads"
-    echo ""
-    
     # Generate HTML report
     echo "📄 Generating detailed cost report..."
     generate_cost_report
