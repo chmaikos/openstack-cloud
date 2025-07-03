@@ -1,7 +1,7 @@
 #cloud-config
 
-# Minimal Database Server Cloud-Init Configuration
-# Only handles system setup, not application deployment
+# Database Server Cloud-Init Configuration
+# Clones from GitHub and sets up PostgreSQL database
 
 hostname: db-server
 manage_etc_hosts: true
@@ -10,7 +10,7 @@ manage_etc_hosts: true
 package_update: true
 package_upgrade: true
 
-# Install only essential packages
+# Install essential packages
 packages:
   - postgresql-14
   - postgresql-client-14
@@ -19,24 +19,78 @@ packages:
   - git
   - curl
   - openssh-server
+  - wget
 
 # Setup SSH access
 ssh_pwauth: false
 disable_root: true
 
-# Minimal system setup
+# Setup PostgreSQL
+write_files:
+  - path: /etc/postgresql/14/main/conf.d/custom.conf
+    content: |
+      # Custom PostgreSQL configuration
+      listen_addresses = '*'
+      max_connections = 100
+      shared_buffers = 128MB
+      effective_cache_size = 512MB
+      maintenance_work_mem = 64MB
+      checkpoint_completion_target = 0.9
+      wal_buffers = 16MB
+      default_statistics_target = 100
+      random_page_cost = 1.1
+      effective_io_concurrency = 200
+      work_mem = 4MB
+      min_wal_size = 1GB
+      max_wal_size = 4GB
+
+# System setup and application deployment
 runcmd:
   # Create application directory
   - mkdir -p /home/ubuntu/app
   - chown ubuntu:ubuntu /home/ubuntu/app
   
-  # Download and run deployment script
-  - curl -o /home/ubuntu/deploy.sh https://raw.githubusercontent.com/your-repo/cloud-app/main/deploy.sh
-  - chmod +x /home/ubuntu/deploy.sh
-  - chown ubuntu:ubuntu /home/ubuntu/deploy.sh
+  # Clone the GitHub repository
+  - cd /home/ubuntu && git clone https://github.com/chmaikos/openstack-cloud.git app
+  - chown -R ubuntu:ubuntu /home/ubuntu/app
   
-  # Run deployment as ubuntu user
-  - su - ubuntu -c "/home/ubuntu/deploy.sh db"
+  # Configure PostgreSQL
+  - systemctl enable postgresql
+  - systemctl start postgresql
+  
+  # Create database and user
+  - sudo -u postgres psql -c "CREATE DATABASE cloudapp;"
+  - sudo -u postgres psql -c "CREATE USER cloudapp WITH PASSWORD 'cloudapp123';"
+  - sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE cloudapp TO cloudapp;"
+  - sudo -u postgres psql -c "ALTER USER cloudapp CREATEDB;"
+  
+  # Install Python dependencies for database initialization
+  - cd /home/ubuntu/app/application && pip3 install -r requirements.txt
+  
+  # Initialize database schema (run as ubuntu user)
+  - su - ubuntu -c "cd /home/ubuntu/app/application && python3 init_db.py"
+  
+  # Configure PostgreSQL to accept connections from web server
+  - echo "host    cloudapp    cloudapp    10.0.0.0/8    md5" >> /etc/postgresql/14/main/pg_hba.conf
+  - echo "host    cloudapp    cloudapp    172.16.0.0/12 md5" >> /etc/postgresql/14/main/pg_hba.conf
+  - echo "host    cloudapp    cloudapp    192.168.0.0/16 md5" >> /etc/postgresql/14/main/pg_hba.conf
+  
+  # Restart PostgreSQL to apply changes
+  - systemctl restart postgresql
+  
+  # Create a simple health check script
+  - |
+    cat > /home/ubuntu/health_check.sh << 'EOF'
+    #!/bin/bash
+    echo "Database server health check:"
+    echo "PostgreSQL status: $(systemctl is-active postgresql)"
+    echo "Database connection test:"
+    sudo -u postgres psql -d cloudapp -c "SELECT version();" 2>/dev/null && echo "Database connection: OK" || echo "Database connection: FAILED"
+    echo "Database tables:"
+    sudo -u postgres psql -d cloudapp -c "\dt" 2>/dev/null || echo "No tables found"
+    EOF
+  - chmod +x /home/ubuntu/health_check.sh
+  - chown ubuntu:ubuntu /home/ubuntu/health_check.sh
 
 # Final message
-final_message: "Database server system setup completed! Application deployment in progress..." 
+final_message: "Database server setup completed! PostgreSQL is running and database is initialized." 

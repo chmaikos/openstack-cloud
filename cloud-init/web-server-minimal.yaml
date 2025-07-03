@@ -1,7 +1,7 @@
 #cloud-config
 
-# Minimal Web Server Cloud-Init Configuration
-# Only handles system setup, not application deployment
+# Web Server Cloud-Init Configuration
+# Clones from GitHub and sets up FastAPI application with nginx
 
 hostname: web-server
 manage_etc_hosts: true
@@ -10,7 +10,7 @@ manage_etc_hosts: true
 package_update: true
 package_upgrade: true
 
-# Install only essential packages
+# Install essential packages
 packages:
   - python3
   - python3-pip
@@ -19,24 +19,124 @@ packages:
   - curl
   - postgresql-client-14
   - openssh-server
+  - wget
+  - supervisor
 
 # Setup SSH access
 ssh_pwauth: false
 disable_root: true
 
-# Minimal system setup
+# Setup nginx configuration
+write_files:
+  - path: /etc/nginx/sites-available/cloudapp
+    content: |
+      server {
+          listen 80;
+          server_name _;
+          
+          location / {
+              proxy_pass http://127.0.0.1:8000;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+          
+          location /static/ {
+              alias /home/ubuntu/app/application/static/;
+          }
+      }
+
+# Setup supervisor configuration for the application
+write_files:
+  - path: /etc/supervisor/conf.d/cloudapp.conf
+    content: |
+      [program:cloudapp]
+      command=/home/ubuntu/app/application/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+      directory=/home/ubuntu/app/application
+      user=ubuntu
+      autostart=true
+      autorestart=true
+      stderr_logfile=/var/log/cloudapp.err.log
+      stdout_logfile=/var/log/cloudapp.out.log
+      environment=PYTHONPATH="/home/ubuntu/app/application",DB_HOST="db-server",DB_NAME="cloudapp",DB_USER="cloudapp",DB_PASSWORD="cloudapp123",DB_PORT="5432",APP_HOST="0.0.0.0",APP_PORT="8000"
+
+# System setup and application deployment
 runcmd:
   # Create application directory
   - mkdir -p /home/ubuntu/app
   - chown ubuntu:ubuntu /home/ubuntu/app
   
-  # Download and run deployment script
-  - curl -o /home/ubuntu/deploy.sh https://raw.githubusercontent.com/your-repo/cloud-app/main/deploy.sh
-  - chmod +x /home/ubuntu/deploy.sh
-  - chown ubuntu:ubuntu /home/ubuntu/deploy.sh
+  # Clone the GitHub repository
+  - cd /home/ubuntu && git clone https://github.com/chmaikos/openstack-cloud.git app
+  - chown -R ubuntu:ubuntu /home/ubuntu/app
   
-  # Run deployment as ubuntu user
-  - su - ubuntu -c "/home/ubuntu/deploy.sh web"
+  # Create virtual environment and install dependencies
+  - cd /home/ubuntu/app/application && python3 -m venv venv
+  - cd /home/ubuntu/app/application && source venv/bin/activate && pip install -r requirements.txt
+  - chown -R ubuntu:ubuntu /home/ubuntu/app/application/venv
+  
+  # Create static directory
+  - mkdir -p /home/ubuntu/app/application/static
+  - chown ubuntu:ubuntu /home/ubuntu/app/application/static
+  
+  # Set environment variables for the application
+  - echo 'export DB_HOST=db-server' >> /home/ubuntu/.bashrc
+  - echo 'export DB_NAME=cloudapp' >> /home/ubuntu/.bashrc
+  - echo 'export DB_USER=cloudapp' >> /home/ubuntu/.bashrc
+  - echo 'export DB_PASSWORD=cloudapp123' >> /home/ubuntu/.bashrc
+  - echo 'export DB_PORT=5432' >> /home/ubuntu/.bashrc
+  - echo 'export APP_HOST=0.0.0.0' >> /home/ubuntu/.bashrc
+  - echo 'export APP_PORT=8000' >> /home/ubuntu/.bashrc
+  
+  # Enable and start nginx
+  - systemctl enable nginx
+  - systemctl start nginx
+  
+  # Enable nginx site
+  - ln -sf /etc/nginx/sites-available/cloudapp /etc/nginx/sites-enabled/
+  - rm -f /etc/nginx/sites-enabled/default
+  - systemctl reload nginx
+  
+  # Setup supervisor
+  - systemctl enable supervisor
+  - systemctl start supervisor
+  
+  # Create startup script for the application
+  - |
+    cat > /home/ubuntu/start_app.sh << 'EOF'
+    #!/bin/bash
+    cd /home/ubuntu/app/application
+    source venv/bin/activate
+    source ~/.bashrc
+    uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+    EOF
+  - chmod +x /home/ubuntu/start_app.sh
+  - chown ubuntu:ubuntu /home/ubuntu/start_app.sh
+  
+  # Create health check script
+  - |
+    cat > /home/ubuntu/health_check.sh << 'EOF'
+    #!/bin/bash
+    echo "Web server health check:"
+    echo "Nginx status: $(systemctl is-active nginx)"
+    echo "Supervisor status: $(systemctl is-active supervisor)"
+    echo "Application status: $(supervisorctl status cloudapp 2>/dev/null || echo 'Not running')"
+    echo "Port 8000 check:"
+    curl -s http://localhost:8000/health 2>/dev/null && echo "Application: OK" || echo "Application: FAILED"
+    echo "Port 80 check:"
+    curl -s http://localhost/ 2>/dev/null && echo "Nginx proxy: OK" || echo "Nginx proxy: FAILED"
+    EOF
+  - chmod +x /home/ubuntu/health_check.sh
+  - chown ubuntu:ubuntu /home/ubuntu/health_check.sh
+  
+  # Wait a moment for supervisor to start the application
+  - sleep 10
+  
+  # Reload supervisor to pick up the new configuration
+  - supervisorctl reread
+  - supervisorctl update
+  - supervisorctl start cloudapp
 
 # Final message
-final_message: "Web server system setup completed! Application deployment in progress..." 
+final_message: "Web server setup completed! FastAPI application is running with nginx proxy." 

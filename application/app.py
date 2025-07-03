@@ -22,14 +22,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Database configuration
-DB_CONFIG = {
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'database': 'cloudapp',
-    'user': 'cloudapp',
-    'password': 'cloudapp123',
-    'port': '5432'
-}
+# Import configuration
+from config import DB_CONFIG, get_db_connection
 
 # Pydantic models
 class User(BaseModel):
@@ -50,14 +44,7 @@ class PostCreate(BaseModel):
     title: str
     content: str
 
-def get_db_connection():
-    """Create database connection"""
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)
-        return conn
-    except Exception as e:
-        print(f"Database connection error: {e}")
-        return None
+
 
 def get_system_stats():
     """Get system statistics"""
