@@ -1,19 +1,19 @@
-=== OpenStack Metrics Report - Thu Jul  3 06:43:29 AM UTC 2025 ===
+=== OpenStack Metrics Report - Thu Jul  3 09:47:03 AM UTC 2025 ===
 Project: cloud_app
 
 === DATABASE SERVER METRICS ===
 🖥️  db-server
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 ID: 593a0ace-1d33-42b8-be85-173ec243c43b
-🔗 IP: 192.168.128.250
+📋 ID: d629181d-59c3-4351-ae0c-908cd81bcb16
+🔗 IP: 192.168.128.50
 📊 Status: ACTIVE
 
-🖥️  CPU Usage: 199.68 CPU-seconds | Trend: ↗️  Increasing
+🖥️  CPU Usage: 70.98 CPU-seconds | Trend: ↗️  Increasing
 
 🧠 Memory Status:
    📊 Total: 2.00 GB | Trend: ➡️  Stable
-   💾 Used: 403.42578125 MB
-   🏠 Resident: 2.00 GB
+   💾 Used: 413.796875 MB
+   🏠 Resident: 2.01 GB
    💿 Swap Activity:
       ↙️  Swap In: 0.0 MB
       ↗️  Swap Out: 0.0 MB
@@ -28,11 +28,11 @@ Project: cloud_app
 🖥️  Instance Details:
    🔢 vCPUs: 1.0
    ⚡ Power State: Unknown
-   ⏱️  Boot Time: 29.959333 seconds
+   ⏱️  Boot Time: 11.293702 seconds
 
 📈 Quick Summary:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🖥️  CPU: 199.68 CPU-seconds
+🖥️  CPU: 70.98 CPU-seconds
 🧠 Memory: 2.00 GB
 ⚡ Status: Unknown
 
@@ -40,16 +40,16 @@ Project: cloud_app
 === WEB SERVER METRICS ===
 🖥️  web-server
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 ID: eb18af10-302a-4a84-a642-27f3e540bc4c
-🔗 IP: 192.168.128.207
+📋 ID: a2424d54-5963-410a-9039-ccf8b1d8c427
+🔗 IP: 192.168.128.193
 📊 Status: ACTIVE
 
-🖥️  CPU Usage: 269.52 CPU-seconds | Trend: ↗️  Increasing
+🖥️  CPU Usage: 78.99 CPU-seconds | Trend: ↗️  Increasing
 
 🧠 Memory Status:
    📊 Total: 2.00 GB | Trend: ➡️  Stable
-   💾 Used: 410.37109375 MB
-   🏠 Resident: 1.91 GB
+   💾 Used: 457.9921875 MB
+   🏠 Resident: 1.98 GB
    💿 Swap Activity:
       ↙️  Swap In: 0.0 MB
       ↗️  Swap Out: 0.0 MB
@@ -64,11 +64,11 @@ Project: cloud_app
 🖥️  Instance Details:
    🔢 vCPUs: 1.0
    ⚡ Power State: Unknown
-   ⏱️  Boot Time: 12.250796 seconds
+   ⏱️  Boot Time: 11.901865 seconds
 
 📈 Quick Summary:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🖥️  CPU: 269.52 CPU-seconds
+🖥️  CPU: 78.99 CPU-seconds
 🧠 Memory: 2.00 GB
 ⚡ Status: Unknown
 

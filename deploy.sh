@@ -48,6 +48,7 @@ log "Creating web security group..."
 if ! openstack security group show $WEB_SG_NAME > /dev/null 2>&1; then
     openstack security group create $WEB_SG_NAME --description "Security group for web server"
     openstack security group rule create $WEB_SG_NAME --protocol tcp --dst-port 80 --remote-ip 0.0.0.0/0
+    openstack security group rule create $WEB_SG_NAME --protocol tcp --dst-port 8000 --remote-ip 0.0.0.0/0
     openstack security group rule create $WEB_SG_NAME --protocol tcp --dst-port 22 --remote-ip 0.0.0.0/0
     openstack security group rule create $WEB_SG_NAME --protocol icmp --remote-ip 0.0.0.0/0
 else
@@ -58,9 +59,9 @@ fi
 log "Creating database security group..."
 if ! openstack security group show $DB_SG_NAME > /dev/null 2>&1; then
     openstack security group create $DB_SG_NAME --description "Security group for database server"
-    openstack security group rule create $DB_SG_NAME --protocol tcp --dst-port 5432 --remote-ip 10.0.0.0/8
-    openstack security group rule create $DB_SG_NAME --protocol tcp --dst-port 22 --remote-ip 10.0.0.0/8
-    openstack security group rule create $DB_SG_NAME --protocol icmp --remote-ip 10.0.0.0/8
+    openstack security group rule create $DB_SG_NAME --protocol tcp --dst-port 5432 --remote-ip 192.168.128.0/24
+    openstack security group rule create $DB_SG_NAME --protocol tcp --dst-port 22 --remote-ip 192.168.128.0/24
+    openstack security group rule create $DB_SG_NAME --protocol icmp --remote-ip 192.168.128.0/24
 else
     log "Database security group already exists"
 fi
@@ -89,16 +90,22 @@ openstack server create \
 DB_VM_IP=$(openstack server show $DB_VM_NAME -f value -c addresses | grep -oE '192\.[0-9]+\.[0-9]+\.[0-9]+')
 log "Database server IP: $DB_VM_IP"
 
-# 4. Create Web Server
-log "Creating web server..."
+# 4. Create Web Server with database IP
+log "Creating web server with database IP: $DB_VM_IP..."
+# Create a temporary cloud-init file with the correct database IP
+sed "s/DB_HOST=db-server/DB_HOST=$DB_VM_IP/g" cloud-init/web-server.yaml > cloud-init/web-server-temp.yaml
+
 openstack server create \
     --image $IMAGE_ID \
     --flavor $FLAVOR_ID \
     --network $NETWORK_ID \
     --security-group $WEB_SG_NAME \
-    --user-data cloud-init/web-server.yaml \
+    --user-data cloud-init/web-server-temp.yaml \
     --wait \
     $WEB_VM_NAME
+
+# Clean up temporary file
+rm -f cloud-init/web-server-temp.yaml
 
 WEB_VM_IP=$(openstack server show $WEB_VM_NAME -f value -c addresses | grep -oE '192\.[0-9]+\.[0-9]+\.[0-9]+')
 log "Web server IP: $WEB_VM_IP"
@@ -112,21 +119,30 @@ log "Floating IP allocated: $FLOATING_IP"
 
 # 6. Wait for cloud-init to complete and configure database connection
 log "Waiting for cloud-init to complete on both servers..."
-sleep 60
+log "This may take 3-5 minutes for full application setup..."
 
-# 7. Update web server with database IP
-log "Updating web server configuration with database IP..."
-# For now, we'll skip the dynamic configuration update
-# The web server will use the default DB_HOST from cloud-init
-# In a production environment, you would use a more sophisticated approach
-log "Note: Web server will use default database configuration from cloud-init"
+# Wait for cloud-init to complete (internal IPs are not accessible from host)
+log "Waiting for cloud-init to complete on both servers..."
+log "Note: Internal IPs ($DB_VM_IP, $WEB_VM_IP) are not accessible from host"
+log "Waiting for application to be ready via floating IP..."
+sleep 120
 
-# 8. Test connectivity
-log "Testing connectivity..."
-if ping -c 1 $FLOATING_IP > /dev/null 2>&1; then
-    log "Web server is reachable via floating IP"
-else
-    warning "Web server not reachable yet"
+# 7. Test application connectivity
+log "Testing application connectivity..."
+for i in {1..20}; do
+    if curl -s "http://$FLOATING_IP/health" >/dev/null 2>&1; then
+        log "✅ Application is running and accessible!"
+        break
+    fi
+    log "Waiting for application to be ready... (attempt $i/20)"
+    sleep 15
+done
+
+if [ $i -eq 20 ]; then
+    warning "Application may not be fully ready yet. Please check manually:"
+    warning "SSH to web server: ssh ubuntu@$FLOATING_IP"
+    warning "Check application status: sudo supervisorctl status cloudapp"
+    warning "Check application logs: tail -f /var/log/cloudapp.out.log"
 fi
 
 # 8. Save configuration
@@ -168,6 +184,20 @@ Deployment Status: SUCCESS
 EOF
 
 log "Deployment completed successfully!"
-log "Web application accessible at: http://$FLOATING_IP"
-log "SSH to web server: ssh ubuntu@$FLOATING_IP"
-log "Database accessible via SSH tunnel: ssh -L 5432:$DB_VM_IP:5432 ubuntu@$FLOATING_IP" 
+log ""
+log "🎉 APPLICATION DEPLOYMENT SUMMARY:"
+log "=================================="
+log "🌐 Web Application: http://$FLOATING_IP"
+log "📚 API Documentation: http://$FLOATING_IP/docs"
+log "🏥 Health Check: http://$FLOATING_IP/health"
+log "🔗 SSH Access: ssh ubuntu@$FLOATING_IP"
+log "🗄️  Database Tunnel: ssh -L 5432:$DB_VM_IP:5432 ubuntu@$FLOATING_IP"
+log "📡 Internal Network: $DB_VM_IP (database), $WEB_VM_IP (web)"
+log ""
+log "📊 MONITORING & ANALYSIS:"
+log "========================="
+log "📈 Monitor Resources: ./monitoring/monitor.sh"
+log "💰 Cost Analysis: ./cost-analysis/cost-analysis.sh"
+log "🧹 Cleanup Resources: ./cleanup.sh"
+log ""
+log "✅ Your two-tier cloud application is now running!" 

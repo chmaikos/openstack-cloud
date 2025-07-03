@@ -14,6 +14,7 @@ package_upgrade: true
 packages:
   - python3
   - python3-pip
+  - python3-venv
   - nginx
   - git
   - curl
@@ -46,24 +47,48 @@ write_files:
               proxy_set_header X-Forwarded-Proto $scheme;
           }
           
+          location /health {
+              proxy_pass http://127.0.0.1:8000/health;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+          
           location /static/ {
               alias /home/ubuntu/app/application/static/;
           }
       }
 
-# Setup supervisor configuration for the application
-write_files:
-  - path: /etc/supervisor/conf.d/cloudapp.conf
+  - path: /etc/systemd/system/cloudapp.service
     content: |
-      [program:cloudapp]
-      command=/home/ubuntu/app/application/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --reload
-      directory=/home/ubuntu/app/application
-      user=ubuntu
-      autostart=true
-      autorestart=true
-      stderr_logfile=/var/log/cloudapp.err.log
-      stdout_logfile=/var/log/cloudapp.out.log
-      environment=PYTHONPATH="/home/ubuntu/app/application",DB_HOST="db-server",DB_NAME="cloudapp",DB_USER="cloudapp",DB_PASSWORD="cloudapp123",DB_PORT="5432",APP_HOST="0.0.0.0",APP_PORT="8000"
+      [Unit]
+      Description=FastAPI Cloud Application
+      After=network.target postgresql.service
+      Wants=postgresql.service
+      
+      [Service]
+      Type=simple
+      User=ubuntu
+      Group=ubuntu
+      WorkingDirectory=/home/ubuntu/app/application
+      Environment=PYTHONPATH=/home/ubuntu/app/application
+      Environment=DB_HOST=db-server
+      Environment=DB_NAME=cloudapp
+      Environment=DB_USER=cloudapp
+      Environment=DB_PASSWORD=cloudapp123
+      Environment=DB_PORT=5432
+      Environment=APP_HOST=0.0.0.0
+      Environment=APP_PORT=8000
+      ExecStart=/home/ubuntu/app/application/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+      ExecReload=/bin/kill -HUP $MAINPID
+      Restart=always
+      RestartSec=10
+      StandardOutput=journal
+      StandardError=journal
+      
+      [Install]
+      WantedBy=multi-user.target
 
 # System setup and application deployment
 runcmd:
@@ -77,7 +102,7 @@ runcmd:
   
   # Create virtual environment and install dependencies
   - cd /home/ubuntu/app/application && python3 -m venv venv
-  - cd /home/ubuntu/app/application && source venv/bin/activate && pip install -r requirements.txt
+  - cd /home/ubuntu/app/application && . venv/bin/activate && pip install -r requirements.txt
   - chown -R ubuntu:ubuntu /home/ubuntu/app/application/venv
   
   # Create static directory
@@ -93,18 +118,17 @@ runcmd:
   - echo 'export APP_HOST=0.0.0.0' >> /home/ubuntu/.bashrc
   - echo 'export APP_PORT=8000' >> /home/ubuntu/.bashrc
   
+  # Enable nginx site first
+  - ln -sf /etc/nginx/sites-available/cloudapp /etc/nginx/sites-enabled/
+  - rm -f /etc/nginx/sites-enabled/default
+  
   # Enable and start nginx
   - systemctl enable nginx
   - systemctl start nginx
   
-  # Enable nginx site
-  - ln -sf /etc/nginx/sites-available/cloudapp /etc/nginx/sites-enabled/
-  - rm -f /etc/nginx/sites-enabled/default
-  - systemctl reload nginx
-  
-  # Setup supervisor
-  - systemctl enable supervisor
-  - systemctl start supervisor
+  # Setup systemd service for the application
+  - systemctl daemon-reload
+  - systemctl enable cloudapp
   
   # Create startup script for the application
   - |
@@ -118,63 +142,30 @@ runcmd:
   - chmod +x /home/ubuntu/start_app.sh
   - chown ubuntu:ubuntu /home/ubuntu/start_app.sh
   
-  # Create comprehensive monitoring script
-  - |
-    cat > /home/ubuntu/monitor_web.sh << 'EOF'
-    #!/bin/bash
-    echo "=== Web Server Monitoring ==="
-    echo "Timestamp: $(date)"
-    echo ""
-    echo "=== System Resources ==="
-    echo "CPU Usage: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)%"
-    echo "Memory Usage: $(free | grep Mem | awk '{printf("%.2f%%", $3/$2 * 100.0)}')"
-    echo "Disk Usage: $(df -h / | awk 'NR==2 {print $5}')"
-    echo ""
-    echo "=== Service Status ==="
-    echo "Nginx: $(systemctl is-active nginx)"
-    echo "Supervisor: $(systemctl is-active supervisor)"
-    echo "FastAPI App: $(supervisorctl status cloudapp 2>/dev/null | awk '{print $2}' || echo 'Not running')"
-    echo ""
-    echo "=== Network Connections ==="
-    echo "Active connections on port 80: $(netstat -an | grep :80 | grep ESTABLISHED | wc -l)"
-    echo "Active connections on port 8000: $(netstat -an | grep :8000 | grep ESTABLISHED | wc -l)"
-    echo ""
-    echo "=== Application Health ==="
-    echo "FastAPI Health Check:"
-    curl -s http://localhost:8000/health 2>/dev/null | head -5 || echo "Health check failed"
-    echo ""
-    echo "=== Nginx Access Logs (last 5) ==="
-    tail -5 /var/log/nginx/access.log 2>/dev/null || echo "No access logs available"
-    echo ""
-    echo "=== Application Logs (last 5) ==="
-    tail -5 /var/log/cloudapp.out.log 2>/dev/null || echo "No application logs available"
-    EOF
-  - chmod +x /home/ubuntu/monitor_web.sh
-  - chown ubuntu:ubuntu /home/ubuntu/monitor_web.sh
-  
-  # Create health check script
-  - |
-    cat > /home/ubuntu/health_check.sh << 'EOF'
-    #!/bin/bash
-    echo "Web server health check:"
-    echo "Nginx status: $(systemctl is-active nginx)"
-    echo "Supervisor status: $(systemctl is-active supervisor)"
-    echo "Application status: $(supervisorctl status cloudapp 2>/dev/null || echo 'Not running')"
-    echo "Port 8000 check:"
-    curl -s http://localhost:8000/health 2>/dev/null && echo "Application: OK" || echo "Application: FAILED"
-    echo "Port 80 check:"
-    curl -s http://localhost/ 2>/dev/null && echo "Nginx proxy: OK" || echo "Nginx proxy: FAILED"
-    EOF
-  - chmod +x /home/ubuntu/health_check.sh
-  - chown ubuntu:ubuntu /home/ubuntu/health_check.sh
-  
-  # Wait a moment for supervisor to start the application
+  # Wait for virtual environment to be ready
   - sleep 10
   
-  # Reload supervisor to pick up the new configuration
-  - supervisorctl reread
-  - supervisorctl update
-  - supervisorctl start cloudapp
+  # Verify virtual environment exists and is properly set up
+  - test -f /home/ubuntu/app/application/venv/bin/uvicorn && echo "Virtual environment ready" || echo "Virtual environment not ready"
+  - test -f /home/ubuntu/app/application/venv/bin/pip && echo "Pip available" || echo "Pip not available"
+  
+  # Start the application with systemd
+  - systemctl start cloudapp
+  
+  # Wait for application to start
+  - sleep 15
+  
+  # Verify application is running
+  - systemctl status cloudapp || echo "Application not started yet"
+  
+  # Test if the application is responding
+  - sleep 5 && curl -s http://localhost:8000/health >/dev/null 2>&1 && echo "Application health check passed" || echo "Application health check failed"
+  
+  # Test nginx proxy
+  - sleep 5 && curl -s http://localhost/health >/dev/null 2>&1 && echo "Nginx proxy health check passed" || echo "Nginx proxy health check failed"
+  
+  # Reload nginx to ensure configuration is applied
+  - systemctl reload nginx
 
 # Final message
 final_message: "Web server setup completed! FastAPI application is running with nginx proxy." 

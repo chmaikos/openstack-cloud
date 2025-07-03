@@ -74,72 +74,17 @@ runcmd:
   - su - ubuntu -c "cd /home/ubuntu/app/application && python3 init_db.py"
   
   # Configure PostgreSQL to accept connections from web server
-  - echo "host    cloudapp    cloudapp    10.0.0.0/8    md5" >> /etc/postgresql/14/main/pg_hba.conf
-  - echo "host    cloudapp    cloudapp    172.16.0.0/12 md5" >> /etc/postgresql/14/main/pg_hba.conf
-  - echo "host    cloudapp    cloudapp    192.168.0.0/16 md5" >> /etc/postgresql/14/main/pg_hba.conf
+  - echo "host    cloudapp    cloudapp    192.168.128.0/24    md5" >> /etc/postgresql/14/main/pg_hba.conf
   
   # Restart PostgreSQL to apply changes
   - systemctl restart postgresql
   
-  # Create comprehensive monitoring script
-  - |
-    cat > /home/ubuntu/monitor_db.sh << 'EOF'
-    #!/bin/bash
-    echo "=== Database Server Monitoring ==="
-    echo "Timestamp: $(date)"
-    echo ""
-    echo "=== System Resources ==="
-    echo "CPU Usage: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)%"
-    echo "Memory Usage: $(free | grep Mem | awk '{printf("%.2f%%", $3/$2 * 100.0)}')"
-    echo "Disk Usage: $(df -h / | awk 'NR==2 {print $5}')"
-    echo ""
-    echo "=== PostgreSQL Status ==="
-    echo "PostgreSQL Service: $(systemctl is-active postgresql)"
-    echo "PostgreSQL Connections: $(sudo -u postgres psql -d cloudapp -c 'SELECT count(*) FROM pg_stat_activity;' -t | xargs)"
-    echo ""
-    echo "=== Database Statistics ==="
-    sudo -u postgres psql -d cloudapp -c "
-    SELECT 
-        schemaname,
-        tablename,
-        attname,
-        n_distinct,
-        correlation
-    FROM pg_stats 
-    WHERE schemaname = 'public' 
-    LIMIT 5;
-    " 2>/dev/null || echo "No statistics available"
-    echo ""
-    echo "=== Active Queries ==="
-    sudo -u postgres psql -d cloudapp -c "
-    SELECT 
-        pid,
-        usename,
-        application_name,
-        client_addr,
-        state,
-        query_start,
-        query
-    FROM pg_stat_activity 
-    WHERE state = 'active' 
-    AND query NOT LIKE '%pg_stat_activity%'
-    LIMIT 3;
-    " 2>/dev/null || echo "No active queries"
-    EOF
+  # Download monitoring and health check scripts from GitHub
+  - cd /home/ubuntu && wget -O monitor_db.sh https://raw.githubusercontent.com/chmaikos/openstack-cloud/main/scripts/monitor_db.sh
   - chmod +x /home/ubuntu/monitor_db.sh
   - chown ubuntu:ubuntu /home/ubuntu/monitor_db.sh
   
-  # Create a simple health check script
-  - |
-    cat > /home/ubuntu/health_check.sh << 'EOF'
-    #!/bin/bash
-    echo "Database server health check:"
-    echo "PostgreSQL status: $(systemctl is-active postgresql)"
-    echo "Database connection test:"
-    sudo -u postgres psql -d cloudapp -c "SELECT version();" 2>/dev/null && echo "Database connection: OK" || echo "Database connection: FAILED"
-    echo "Database tables:"
-    sudo -u postgres psql -d cloudapp -c "\dt" 2>/dev/null || echo "No tables found"
-    EOF
+  - cd /home/ubuntu && wget -O health_check.sh https://raw.githubusercontent.com/chmaikos/openstack-cloud/main/scripts/health_check.sh
   - chmod +x /home/ubuntu/health_check.sh
   - chown ubuntu:ubuntu /home/ubuntu/health_check.sh
   

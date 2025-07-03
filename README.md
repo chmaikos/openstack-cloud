@@ -6,6 +6,15 @@
 This project implements a two-tier cloud application (Web/API + Database) on OpenStack with automated deployment, monitoring, and cost analysis.
 
 ### Architecture
+
+Detailed architecture diagrams are available in the `architecture/` directory:
+
+- **Network Architecture**: `architecture/network-architecture.md` - Network topology, security groups, and connectivity
+- **System Architecture**: `architecture/system-architecture.md` - Application components, technology stack, and data flow
+- **Deployment Flow**: `architecture/deployment-flow.md` - Step-by-step deployment process
+- **Test Cases**: `architecture/test-cases.md` - Comprehensive test cases and validation criteria
+
+#### Quick Overview
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Floating IP   │    │   Web/API VM    │    │   Database VM   │
@@ -31,9 +40,9 @@ This project implements a two-tier cloud application (Web/API + Database) on Ope
 ### Implementation Steps
 
 #### 1. Network & Security Setup ✅
-- Project: `cloud_app` (already exists)
-- Network: `app_net` (already exists)
-- Security Groups: To be created for web and database tiers
+- Project: `cloud_app`
+- Network: `app_net`
+
 
 #### 2. Database Server Setup
 - VM with PostgreSQL 14
@@ -58,21 +67,30 @@ This project implements a two-tier cloud application (Web/API + Database) on Ope
 cloud-openstack/
 ├── README.md
 ├── architecture/
-│   └── network-diagram.png
+│   ├── network-architecture.md
+│   ├── system-architecture.md
+│   ├── deployment-flow.md
+│   └── test-cases.md
 ├── cloud-init/
 │   ├── db-server.yaml
 │   └── web-server.yaml
 ├── application/
 │   ├── app.py
+│   ├── config.py
 │   ├── requirements.txt
-│   └── templates/
+│   └── init_db.py
 ├── monitoring/
-│   └── monitoring-scripts/
+│   └── monitor.sh
 ├── cost-analysis/
-│   └── cost-calculator.py
-└── logs/
-    ├── deployment.log
-    └── monitoring.log
+│   └── cost-analysis.sh
+├── scripts/
+├── screenshots/
+├── logs/
+│   ├── deployment.log
+│   └── monitoring/
+├── deploy.sh
+├── cleanup.sh
+└── cloud_app-openrc.sh
 ```
 
 ### Usage
