@@ -1,7 +1,7 @@
 #cloud-config
 
 # Database Server Cloud-Init Configuration
-# Clones from GitHub and sets up PostgreSQL database
+# Clones from GitHub and sets up PostgreSQL database with monitoring
 
 hostname: db-server
 manage_etc_hosts: true
@@ -20,6 +20,9 @@ packages:
   - curl
   - openssh-server
   - wget
+  - htop
+  - iotop
+  - sysstat
 
 # Setup SSH access
 ssh_pwauth: false
@@ -78,6 +81,54 @@ runcmd:
   # Restart PostgreSQL to apply changes
   - systemctl restart postgresql
   
+  # Create comprehensive monitoring script
+  - |
+    cat > /home/ubuntu/monitor_db.sh << 'EOF'
+    #!/bin/bash
+    echo "=== Database Server Monitoring ==="
+    echo "Timestamp: $(date)"
+    echo ""
+    echo "=== System Resources ==="
+    echo "CPU Usage: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)%"
+    echo "Memory Usage: $(free | grep Mem | awk '{printf("%.2f%%", $3/$2 * 100.0)}')"
+    echo "Disk Usage: $(df -h / | awk 'NR==2 {print $5}')"
+    echo ""
+    echo "=== PostgreSQL Status ==="
+    echo "PostgreSQL Service: $(systemctl is-active postgresql)"
+    echo "PostgreSQL Connections: $(sudo -u postgres psql -d cloudapp -c 'SELECT count(*) FROM pg_stat_activity;' -t | xargs)"
+    echo ""
+    echo "=== Database Statistics ==="
+    sudo -u postgres psql -d cloudapp -c "
+    SELECT 
+        schemaname,
+        tablename,
+        attname,
+        n_distinct,
+        correlation
+    FROM pg_stats 
+    WHERE schemaname = 'public' 
+    LIMIT 5;
+    " 2>/dev/null || echo "No statistics available"
+    echo ""
+    echo "=== Active Queries ==="
+    sudo -u postgres psql -d cloudapp -c "
+    SELECT 
+        pid,
+        usename,
+        application_name,
+        client_addr,
+        state,
+        query_start,
+        query
+    FROM pg_stat_activity 
+    WHERE state = 'active' 
+    AND query NOT LIKE '%pg_stat_activity%'
+    LIMIT 3;
+    " 2>/dev/null || echo "No active queries"
+    EOF
+  - chmod +x /home/ubuntu/monitor_db.sh
+  - chown ubuntu:ubuntu /home/ubuntu/monitor_db.sh
+  
   # Create a simple health check script
   - |
     cat > /home/ubuntu/health_check.sh << 'EOF'
@@ -91,6 +142,22 @@ runcmd:
     EOF
   - chmod +x /home/ubuntu/health_check.sh
   - chown ubuntu:ubuntu /home/ubuntu/health_check.sh
+  
+  # Setup log rotation for monitoring
+  - |
+    cat > /etc/logrotate.d/cloudapp-monitoring << 'EOF'
+    /home/ubuntu/monitoring.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        notifempty
+        create 644 ubuntu ubuntu
+        postrotate
+            echo "$(date): Log rotated" >> /home/ubuntu/monitoring.log
+        endscript
+    }
+    EOF
 
 # Final message
 final_message: "Database server setup completed! PostgreSQL is running and database is initialized." 

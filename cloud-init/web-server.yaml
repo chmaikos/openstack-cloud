@@ -21,6 +21,10 @@ packages:
   - openssh-server
   - wget
   - supervisor
+  - htop
+  - iotop
+  - sysstat
+  - apache2-utils
 
 # Setup SSH access
 ssh_pwauth: false
@@ -113,6 +117,40 @@ runcmd:
     EOF
   - chmod +x /home/ubuntu/start_app.sh
   - chown ubuntu:ubuntu /home/ubuntu/start_app.sh
+  
+  # Create comprehensive monitoring script
+  - |
+    cat > /home/ubuntu/monitor_web.sh << 'EOF'
+    #!/bin/bash
+    echo "=== Web Server Monitoring ==="
+    echo "Timestamp: $(date)"
+    echo ""
+    echo "=== System Resources ==="
+    echo "CPU Usage: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1)%"
+    echo "Memory Usage: $(free | grep Mem | awk '{printf("%.2f%%", $3/$2 * 100.0)}')"
+    echo "Disk Usage: $(df -h / | awk 'NR==2 {print $5}')"
+    echo ""
+    echo "=== Service Status ==="
+    echo "Nginx: $(systemctl is-active nginx)"
+    echo "Supervisor: $(systemctl is-active supervisor)"
+    echo "FastAPI App: $(supervisorctl status cloudapp 2>/dev/null | awk '{print $2}' || echo 'Not running')"
+    echo ""
+    echo "=== Network Connections ==="
+    echo "Active connections on port 80: $(netstat -an | grep :80 | grep ESTABLISHED | wc -l)"
+    echo "Active connections on port 8000: $(netstat -an | grep :8000 | grep ESTABLISHED | wc -l)"
+    echo ""
+    echo "=== Application Health ==="
+    echo "FastAPI Health Check:"
+    curl -s http://localhost:8000/health 2>/dev/null | head -5 || echo "Health check failed"
+    echo ""
+    echo "=== Nginx Access Logs (last 5) ==="
+    tail -5 /var/log/nginx/access.log 2>/dev/null || echo "No access logs available"
+    echo ""
+    echo "=== Application Logs (last 5) ==="
+    tail -5 /var/log/cloudapp.out.log 2>/dev/null || echo "No application logs available"
+    EOF
+  - chmod +x /home/ubuntu/monitor_web.sh
+  - chown ubuntu:ubuntu /home/ubuntu/monitor_web.sh
   
   # Create health check script
   - |

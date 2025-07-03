@@ -21,7 +21,7 @@ This project implements a two-tier cloud application (Web/API + Database) on Ope
 ```
 
 ### Components
-1. **Web/API Server**: Flask application with REST API
+1. **Web/API Server**: FastAPI application with REST API
 2. **Database Server**: PostgreSQL 14 database
 3. **Network**: Private network with floating IP access
 4. **Security**: Custom security groups for each tier
@@ -41,7 +41,7 @@ This project implements a two-tier cloud application (Web/API + Database) on Ope
 - Security group for port 5432
 
 #### 3. Web/API Server Setup
-- VM with Flask application
+- VM with FastAPI application
 - Cloud-init automation
 - Security group for port 80
 
@@ -90,7 +90,7 @@ This will:
 
 #### 2. Monitor the Application
 ```bash
-./monitor.sh
+./monitoring/monitor.sh
 ```
 This provides real-time monitoring of:
 - Server status and health
@@ -102,7 +102,7 @@ This provides real-time monitoring of:
 
 #### 3. Analyze Costs
 ```bash
-./cost-analysis.sh
+./cost-analysis/cost-analysis.sh
 ```
 This calculates:
 - Resource allocation costs (vCPU, RAM, Storage)
